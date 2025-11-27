@@ -1,0 +1,7 @@
+{
+  "name": "SpeakPerfect AI",
+  "description": "An AI-powered pronunciation coach that listens to your speech and provides real-time scoring and feedback using Gemini.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
