@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { WordChallenge } from '../types';
 import { Volume2, Star } from 'lucide-react';
@@ -8,10 +10,12 @@ interface WordDisplayProps {
 
 const WordDisplay: React.FC<WordDisplayProps> = ({ challenge }) => {
   const speakWord = () => {
-    const utterance = new SpeechSynthesisUtterance(challenge.word);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.9; // Slightly slower for clarity
-    window.speechSynthesis.speak(utterance);
+    if (typeof window !== 'undefined') {
+      const utterance = new SpeechSynthesisUtterance(challenge.word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9; // Slightly slower for clarity
+      window.speechSynthesis.speak(utterance);
+    }
   };
 
   const getDifficultyColor = (diff: string) => {
@@ -57,19 +61,9 @@ const WordDisplay: React.FC<WordDisplayProps> = ({ challenge }) => {
             "{challenge.definition}"
         </p>
       </div>
-      
-      <style>{`
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.8); }
-            70% { transform: scale(1.05); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .animate-pop-in {
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-      `}</style>
     </div>
   );
 };
 
 export default WordDisplay;
+

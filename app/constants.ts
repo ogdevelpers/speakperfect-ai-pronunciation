@@ -72,3 +72,4 @@ export const CHALLENGES: WordChallenge[] = [
     difficulty: 'Easy'
   }
 ];
+

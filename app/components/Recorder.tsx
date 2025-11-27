@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Square, Loader2, Mic } from 'lucide-react';
 import { AppState } from '../types';
@@ -185,3 +187,4 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
 };
 
 export default Recorder;
+

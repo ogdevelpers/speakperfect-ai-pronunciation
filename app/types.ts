@@ -21,3 +21,4 @@ export enum AppState {
   ERROR = 'ERROR',
   FINISHED = 'FINISHED'
 }
+

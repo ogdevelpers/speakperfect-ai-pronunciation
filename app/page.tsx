@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+'use client';
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CHALLENGES } from './constants';
 import { AppState, EvaluationResult } from './types';
 import WordDisplay from './components/WordDisplay';
@@ -6,7 +8,6 @@ import Recorder from './components/Recorder';
 import ResultCard from './components/ResultCard';
 import { evaluatePronunciation } from './services/geminiService';
 import { Mic2, Timer, Trophy, RotateCcw, Play, Gamepad2 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 
 const TOTAL_TIME_SECONDS = 120; // 2 minutes
 
@@ -23,7 +24,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
   });
 };
 
-const App: React.FC = () => {
+export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
@@ -34,6 +35,11 @@ const App: React.FC = () => {
   const timerRef = useRef<any>(null);
   
   const currentChallenge = CHALLENGES[currentIndex];
+
+  const finishGame = useCallback(() => {
+    clearInterval(timerRef.current);
+    setAppState(AppState.FINISHED);
+  }, []);
 
   // Timer Logic
   useEffect(() => {
@@ -51,44 +57,52 @@ const App: React.FC = () => {
       clearInterval(timerRef.current);
     }
     return () => clearInterval(timerRef.current);
-  }, [appState]);
+  }, [appState, finishGame]);
 
   // Trigger confetti on good result
   useEffect(() => {
-    if (appState === AppState.RESULT && evaluation && evaluation.score >= 80) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#6366f1', '#ec4899', '#8b5cf6', '#10b981']
-      });
-    }
-    if (appState === AppState.FINISHED) {
+    if (typeof window === 'undefined') return;
+    
+    const triggerConfetti = async () => {
+      const confetti = (await import('canvas-confetti')).default;
+      
+      if (appState === AppState.RESULT && evaluation && evaluation.score >= 80) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#6366f1', '#ec4899', '#8b5cf6', '#10b981']
+        });
+      }
+      if (appState === AppState.FINISHED) {
         // Big celebration
         const duration = 3000;
         const end = Date.now() + duration;
 
         (function frame() {
-        confetti({
+          confetti({
             particleCount: 3,
             angle: 60,
             spread: 55,
             origin: { x: 0 },
             colors: ['#6366f1', '#ec4899']
-        });
-        confetti({
+          });
+          confetti({
             particleCount: 3,
             angle: 120,
             spread: 55,
             origin: { x: 1 },
             colors: ['#f43f5e', '#f59e0b']
-        });
+          });
 
-        if (Date.now() < end) {
+          if (Date.now() < end) {
             requestAnimationFrame(frame);
-        }
+          }
         }());
-    }
+      }
+    };
+    
+    triggerConfetti();
   }, [appState, evaluation]);
 
   const startGame = () => {
@@ -97,11 +111,6 @@ const App: React.FC = () => {
     setTimeLeft(TOTAL_TIME_SECONDS);
     setAppState(AppState.RECORDING);
     setEvaluation(null);
-  };
-
-  const finishGame = () => {
-    clearInterval(timerRef.current);
-    setAppState(AppState.FINISHED);
   };
 
   const handleStartRecording = () => {
@@ -298,38 +307,7 @@ const App: React.FC = () => {
       <footer className="w-full py-6 text-center text-gray-400 text-xs bg-white/50 backdrop-blur-sm relative z-10">
         <p className="font-bold tracking-wider opacity-60">POWERED BY SPELLBEE</p>
       </footer>
-
-      {/* Global styles for animations */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-            20%, 40%, 60%, 80% { transform: translateX(4px); }
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-        .animate-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-      `}</style>
     </div>
   );
-};
+}
 
-export default App;

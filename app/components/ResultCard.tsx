@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { EvaluationResult } from '../types';
 import { CheckCircle2, XCircle, ArrowRight, Star, Sparkles } from 'lucide-react';
@@ -122,18 +124,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, onNext, isLast }) => {
             <ArrowRight className="w-5 h-5" />
         </button>
       </div>
-
-      <style>{`
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up {
-            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-      `}</style>
     </div>
   );
 };
 
 export default ResultCard;
+

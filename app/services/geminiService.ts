@@ -1,7 +1,9 @@
+'use client';
+
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { EvaluationResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '' });
 
 const evaluationSchema: Schema = {
   type: Type.OBJECT,
@@ -78,3 +80,4 @@ export const evaluatePronunciation = async (
     throw error;
   }
 };
+
