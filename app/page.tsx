@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { CHALLENGES } from './constants';
-import { AppState, EvaluationResult } from './types';
+import { getWordsByLevel } from './constants';
+import { AppState, EvaluationResult, Level } from './types';
 import WordDisplay from './components/WordDisplay';
 import Recorder from './components/Recorder';
 import ResultCard from './components/ResultCard';
-import { evaluatePronunciation } from './services/geminiService';
-import { Mic2, Timer, Trophy, RotateCcw, Play, Gamepad2 } from 'lucide-react';
+import { evaluatePronunciation } from './services/pronunciationService';
+import { Mic2, Timer, Trophy, RotateCcw, Play, Gamepad2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 const TOTAL_TIME_SECONDS = 120; // 2 minutes
 
@@ -31,32 +31,49 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME_SECONDS);
   const [results, setResults] = useState<EvaluationResult[]>([]);
+  const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
+  const [challenges, setChallenges] = useState<typeof import('./constants').CHALLENGES>([]);
   
   const timerRef = useRef<any>(null);
   
-  const currentChallenge = CHALLENGES[currentIndex];
+  const currentChallenge = challenges[currentIndex];
 
   const finishGame = useCallback(() => {
     clearInterval(timerRef.current);
     setAppState(AppState.FINISHED);
   }, []);
 
-  // Timer Logic
+  // Timer Logic - continues running during RECORDING, PROCESSING, and RESULT states
   useEffect(() => {
-    if (appState === AppState.RECORDING) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            finishGame();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    const isGameActive = appState === AppState.RECORDING || appState === AppState.PROCESSING || appState === AppState.RESULT;
+    
+    if (isGameActive) {
+      // Only start timer if it's not already running
+      if (!timerRef.current) {
+        timerRef.current = setInterval(() => {
+          setTimeLeft((prev) => {
+            if (prev <= 1) {
+              finishGame();
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
     } else {
-      clearInterval(timerRef.current);
+      // Clear timer when game is not active
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
-    return () => clearInterval(timerRef.current);
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [appState, finishGame]);
 
   // Trigger confetti on good result
@@ -105,12 +122,19 @@ export default function Home() {
     triggerConfetti();
   }, [appState, evaluation]);
 
-  const startGame = () => {
+  const handleLevelSelection = (level: Level) => {
+    setSelectedLevel(level);
+    const levelWords = getWordsByLevel(level);
+    setChallenges(levelWords);
     setCurrentIndex(0);
     setResults([]);
     setTimeLeft(TOTAL_TIME_SECONDS);
-    setAppState(AppState.RECORDING);
     setEvaluation(null);
+    setAppState(AppState.RECORDING);
+  };
+
+  const startGame = () => {
+    setAppState(AppState.LEVEL_SELECTION);
   };
 
   const handleStartRecording = () => {
@@ -127,15 +151,17 @@ export default function Home() {
       setEvaluation(result);
       setResults(prev => [...prev, result]);
       setAppState(AppState.RESULT);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMsg("Failed to analyze audio. Please check your internet connection.");
+      // Use the error message from the service if available, otherwise use a generic one
+      const errorMessage = err?.message || "Failed to analyze audio. Please check your internet connection and try again.";
+      setErrorMsg(errorMessage);
       setAppState(AppState.ERROR);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex >= CHALLENGES.length - 1) {
+    if (currentIndex >= challenges.length - 1) {
       finishGame();
     } else {
       setCurrentIndex(prev => prev + 1);
@@ -174,7 +200,7 @@ export default function Home() {
           </div>
           <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">SpeakPerfect</h1>
           <p className="text-gray-500 mb-8 font-medium">
-            Can you beat the clock? Pronounce 10 words correctly in 2 minutes!
+            Can you beat the clock? Pronounce words correctly in 2 minutes!
           </p>
           <button 
             onClick={startGame}
@@ -182,6 +208,78 @@ export default function Home() {
           >
             <Play className="w-6 h-6 fill-current" />
             Start Game
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Level Selection Screen
+  if (appState === AppState.LEVEL_SELECTION) {
+    const levels: { level: Level; label: string; icon: React.ReactNode; color: string; bgColor: string; description: string }[] = [
+      {
+        level: 'Low',
+        label: 'Low',
+        icon: <TrendingDown className="w-8 h-8" />,
+        color: 'text-green-600',
+        bgColor: 'bg-green-50 hover:bg-green-100 border-green-200',
+        description: 'Easy words for beginners'
+      },
+      {
+        level: 'Medium',
+        label: 'Medium',
+        icon: <Minus className="w-8 h-8" />,
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-50 hover:bg-yellow-100 border-yellow-200',
+        description: 'Moderate difficulty words'
+      },
+      {
+        level: 'Hard',
+        label: 'Hard',
+        icon: <TrendingUp className="w-8 h-8" />,
+        color: 'text-red-600',
+        bgColor: 'bg-red-50 hover:bg-red-100 border-red-200',
+        description: 'Challenging words for experts'
+      }
+    ];
+
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        {/* Decorative Blobs */}
+        <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
+        <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10 animation-delay-2000"></div>
+
+        <div className="max-w-2xl w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform hover:scale-[1.01] transition-transform duration-300 relative z-10">
+          <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-indigo-50">
+            <Gamepad2 className="w-12 h-12 text-indigo-600" />
+          </div>
+          <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">Choose Your Level</h1>
+          <p className="text-gray-500 mb-8 font-medium">
+            Select a difficulty level. You'll get up to 10 words to pronounce!
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {levels.map(({ level, label, icon, color, bgColor, description }) => (
+              <button
+                key={level}
+                onClick={() => handleLevelSelection(level)}
+                className={`${bgColor} border-2 rounded-2xl p-6 text-left transition-all transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg`}
+              >
+                <div className={`${color} mb-3 flex items-center justify-center`}>
+                  {icon}
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">{label}</h3>
+                <p className="text-sm text-gray-600">{description}</p>
+                <p className="text-xs text-gray-500 mt-2 font-medium">Up to 10 words</p>
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setAppState(AppState.IDLE)}
+            className="text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
+          >
+            ← Back to Home
           </button>
         </div>
       </div>
@@ -210,7 +308,7 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4 my-8">
             <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <p className="text-gray-400 text-xs font-bold uppercase mb-1">Words</p>
-              <p className="text-3xl font-bold text-gray-800">{results.length} <span className="text-lg text-gray-400">/ {CHALLENGES.length}</span></p>
+              <p className="text-3xl font-bold text-gray-800">{results.length} <span className="text-lg text-gray-400">/ {challenges.length}</span></p>
             </div>
             <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <p className="text-gray-400 text-xs font-bold uppercase mb-1">Score</p>
@@ -252,7 +350,7 @@ export default function Home() {
                 <span>{formatTime(timeLeft)}</span>
              </div>
              <div className="text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100">
-               Word {currentIndex + 1} of {CHALLENGES.length}
+               Word {currentIndex + 1} of {challenges.length}
              </div>
           </div>
         </div>
@@ -265,13 +363,13 @@ export default function Home() {
         <div className="w-full h-3 bg-gray-200 rounded-full mb-10 overflow-hidden shadow-inner">
             <div 
                 className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-all duration-700 ease-out rounded-full relative"
-                style={{ width: `${((currentIndex + (appState === AppState.RESULT ? 1 : 0)) / CHALLENGES.length) * 100}%` }}
+                style={{ width: `${challenges.length > 0 ? ((currentIndex + (appState === AppState.RESULT ? 1 : 0)) / challenges.length) * 100 : 0}%` }}
             >
                 <div className="absolute inset-0 bg-white/30 w-full animate-[shimmer_2s_infinite]"></div>
             </div>
         </div>
 
-        <WordDisplay challenge={currentChallenge} />
+        {currentChallenge && <WordDisplay challenge={currentChallenge} />}
 
         {/* Dynamic Interaction Area */}
         <div className="w-full min-h-[300px] flex flex-col items-center justify-start mt-4">
@@ -296,7 +394,7 @@ export default function Home() {
                     <ResultCard 
                         result={evaluation}
                         onNext={handleNext}
-                        isLast={currentIndex === CHALLENGES.length - 1}
+                        isLast={currentIndex === challenges.length - 1}
                     />
                 )
             )}

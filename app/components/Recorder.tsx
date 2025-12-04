@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Square, Loader2, Mic } from 'lucide-react';
 import { AppState } from '../types';
 
@@ -22,31 +22,70 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
   const silenceTimerRef = useRef<any>(null);
   const speechStartedRef = useRef<boolean>(false);
 
-  // Auto-start recording when mounted if in RECORDING state
+  // Define stopStream before it's used in useEffect
+  const stopStream = useCallback(() => {
+    setStream((currentStream) => {
+      if (currentStream) {
+        currentStream.getTracks().forEach((track) => track.stop());
+      }
+      return null;
+    });
+  }, []);
+
+  // Reset stream when appState changes to RECORDING (new word)
   useEffect(() => {
     if (appState === AppState.RECORDING) {
-      startRecording();
+      // Reset stream and visualizer when starting a new word
+      stopStream();
+      setVisualizerData(new Array(12).fill(5));
+      speechStartedRef.current = false;
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
     }
+  }, [appState, stopStream]);
+
+  // Cleanup stream on unmount
+  useEffect(() => {
     return () => {
       stopStream();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appState]);
+  }, [stopStream]);
 
   const startRecording = async () => {
     try {
-      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Optimized audio constraints for immediate recording in crowded environments
+      const audioConstraints: MediaTrackConstraints = {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        // Request high-quality audio for better analysis
+        sampleRate: { ideal: 44100 },
+        channelCount: { ideal: 1 }, // Mono for better processing
+      };
+
+      const audioStream = await navigator.mediaDevices.getUserMedia({ 
+        audio: audioConstraints 
+      });
       setStream(audioStream);
 
       // Setup Audio Context for Visualizer and Silence Detection
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+        sampleRate: 44100, // High sample rate for quality
+        latencyHint: 'interactive' // Low latency for immediate response
+      });
       const source = audioContext.createMediaStreamSource(audioStream);
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 64; // Smaller FFT for chunkier bars
+      analyser.smoothingTimeConstant = 0.3; // Less smoothing for more responsive visualization
       source.connect(analyser);
       analyserRef.current = analyser;
 
-      const mediaRecorder = new MediaRecorder(audioStream);
+      const mediaRecorder = new MediaRecorder(audioStream, {
+        mimeType: 'audio/webm;codecs=opus', // High quality codec
+        audioBitsPerSecond: 128000 // High bitrate for quality
+      });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -64,7 +103,8 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
         audioContext.close();
       };
 
-      mediaRecorder.start();
+      // Start recording immediately with timeslice for better responsiveness
+      mediaRecorder.start(100); // Collect data every 100ms for immediate processing
       speechStartedRef.current = false;
       onStartRecording();
       
@@ -125,13 +165,6 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
     }
   };
 
-  const stopStream = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
-  };
-
   if (appState === AppState.PROCESSING) {
     return (
       <div className="flex flex-col items-center justify-center p-8 animate-pulse">
@@ -156,6 +189,26 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
     return colors[index % colors.length];
   };
 
+  // Show start recording button if not recording yet
+  if (appState === AppState.RECORDING && !stream) {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <div className="h-32 flex items-center justify-center mb-6 w-full max-w-sm p-4 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/60 shadow-inner">
+          <Mic className="w-16 h-16 text-indigo-400 animate-pulse" />
+        </div>
+        <button
+          onClick={startRecording}
+          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold text-lg transition-all flex items-center gap-3 shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 active:scale-95"
+        >
+          <Mic className="w-6 h-6" />
+          Start Recording
+        </button>
+        <p className="text-gray-500 text-sm mt-4 font-medium">Click to start recording your pronunciation</p>
+      </div>
+    );
+  }
+
+  // Show recording interface when actively recording
   return (
     <div className="flex flex-col items-center w-full">
       <div className="h-32 flex items-end justify-center gap-1.5 mb-6 w-full max-w-sm p-4 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/60 shadow-inner">

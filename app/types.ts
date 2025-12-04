@@ -1,3 +1,5 @@
+export type Level = 'Low' | 'Medium' | 'Hard';
+
 export interface WordChallenge {
   id: string;
   word: string;
@@ -15,6 +17,7 @@ export interface EvaluationResult {
 
 export enum AppState {
   IDLE = 'IDLE',
+  LEVEL_SELECTION = 'LEVEL_SELECTION',
   RECORDING = 'RECORDING',
   PROCESSING = 'PROCESSING',
   RESULT = 'RESULT',
