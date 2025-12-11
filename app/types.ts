@@ -3,7 +3,7 @@ export type Level = 'Low' | 'Medium' | 'Hard';
 export interface WordChallenge {
   id: string;
   word: string;
-  phonetic: string;
+  phonetic?: string;
   definition: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
 }

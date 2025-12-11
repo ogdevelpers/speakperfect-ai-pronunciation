@@ -6,6 +6,8 @@ import { AppState, EvaluationResult, Level } from './types';
 import WordDisplay from './components/WordDisplay';
 import Recorder from './components/Recorder';
 import ResultCard from './components/ResultCard';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import { evaluatePronunciation } from './services/pronunciationService';
 import { Mic2, Timer, Trophy, RotateCcw, Play, Gamepad2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
@@ -178,38 +180,38 @@ export default function Home() {
     setErrorMsg(null);
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   // --- Screens ---
 
   // Start Screen
   if (appState === AppState.IDLE) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient">
-        {/* Decorative Blobs */}
-        <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
-        <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10 animation-delay-2000"></div>
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient">
+        <Header />
+        
+        <main className="flex-1 flex items-center justify-center p-6 relative">
+          {/* Decorative Blobs */}
+          <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
+          <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10 animation-delay-2000"></div>
 
-        <div className="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform hover:scale-[1.01] transition-transform duration-300">
-          <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-indigo-50">
-            <Mic2 className="w-12 h-12 text-indigo-600 animate-bounce" />
+          <div className="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform hover:scale-[1.01] transition-transform duration-300 relative z-10">
+            <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-indigo-50">
+              <Mic2 className="w-12 h-12 text-indigo-600 animate-bounce" />
+            </div>
+            <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">SpeakPerfect</h1>
+            <p className="text-gray-500 mb-8 font-medium">
+              Can you beat the clock? Pronounce words correctly in 2 minutes!
+            </p>
+            <button 
+              onClick={startGame}
+              className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold text-xl shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <Play className="w-6 h-6 fill-current" />
+              Start Game
+            </button>
           </div>
-          <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">SpeakPerfect</h1>
-          <p className="text-gray-500 mb-8 font-medium">
-            Can you beat the clock? Pronounce words correctly in 2 minutes!
-          </p>
-          <button 
-            onClick={startGame}
-            className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold text-xl shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2"
-          >
-            <Play className="w-6 h-6 fill-current" />
-            Start Game
-          </button>
-        </div>
+        </main>
+        
+        <Footer />
       </div>
     );
   }
@@ -244,44 +246,50 @@ export default function Home() {
     ];
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-        {/* Decorative Blobs */}
-        <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
-        <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10 animation-delay-2000"></div>
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <Header />
+        
+        <main className="flex-1 flex items-center justify-center p-6 relative">
+          {/* Decorative Blobs */}
+          <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
+          <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10 animation-delay-2000"></div>
 
-        <div className="max-w-2xl w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform hover:scale-[1.01] transition-transform duration-300 relative z-10">
-          <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-indigo-50">
-            <Gamepad2 className="w-12 h-12 text-indigo-600" />
-          </div>
-          <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">Choose Your Level</h1>
-          <p className="text-gray-500 mb-8 font-medium">
-            Select a difficulty level. You'll get up to 10 words to pronounce!
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {levels.map(({ level, label, icon, color, bgColor, description }) => (
-              <button
-                key={level}
-                onClick={() => handleLevelSelection(level)}
-                className={`${bgColor} border-2 rounded-2xl p-6 text-left transition-all transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg`}
-              >
-                <div className={`${color} mb-3 flex items-center justify-center`}>
-                  {icon}
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">{label}</h3>
-                <p className="text-sm text-gray-600">{description}</p>
-                <p className="text-xs text-gray-500 mt-2 font-medium">Up to 10 words</p>
-              </button>
-            ))}
-          </div>
+          <div className="max-w-2xl w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform hover:scale-[1.01] transition-transform duration-300 relative z-10">
+            <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-indigo-50">
+              <Gamepad2 className="w-12 h-12 text-indigo-600" />
+            </div>
+            <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">Choose Your Level</h1>
+            <p className="text-gray-500 mb-8 font-medium">
+              Select a difficulty level. You'll get up to 10 words to pronounce!
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {levels.map(({ level, label, icon, color, bgColor, description }) => (
+                <button
+                  key={level}
+                  onClick={() => handleLevelSelection(level)}
+                  className={`${bgColor} border-2 rounded-2xl p-6 text-left transition-all transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg`}
+                >
+                  <div className={`${color} mb-3 flex items-center justify-center`}>
+                    {icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{label}</h3>
+                  <p className="text-sm text-gray-600">{description}</p>
+                  <p className="text-xs text-gray-500 mt-2 font-medium">Up to 10 words</p>
+                </button>
+              ))}
+            </div>
 
-          <button
-            onClick={() => setAppState(AppState.IDLE)}
-            className="text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
-          >
-            ← Back to Home
-          </button>
-        </div>
+            <button
+              onClick={() => setAppState(AppState.IDLE)}
+              className="text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </main>
+        
+        <Footer />
       </div>
     );
   }
@@ -297,114 +305,100 @@ export default function Home() {
     else if (avgScore > 75) message = "Awesome Job! 🎉";
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-blue-400 to-indigo-600">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center animate-fade-in-up border-4 border-white/20">
-          <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-yellow-200">
-            <Trophy className="w-12 h-12 text-yellow-500" />
-          </div>
-          <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Level Complete!</h1>
-          <p className="text-indigo-500 font-bold text-lg mb-6">{message}</p>
-          
-          <div className="grid grid-cols-2 gap-4 my-8">
-            <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
-              <p className="text-gray-400 text-xs font-bold uppercase mb-1">Words</p>
-              <p className="text-3xl font-bold text-gray-800">{results.length} <span className="text-lg text-gray-400">/ {challenges.length}</span></p>
+      <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-400 to-indigo-600">
+        <Header />
+        
+        <main className="flex-1 flex items-center justify-center p-6">
+          <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center animate-fade-in-up border-4 border-white/20">
+            <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-yellow-200">
+              <Trophy className="w-12 h-12 text-yellow-500" />
             </div>
-            <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
-              <p className="text-gray-400 text-xs font-bold uppercase mb-1">Score</p>
-              <p className={`text-3xl font-bold ${avgScore >= 80 ? 'text-green-500' : 'text-indigo-500'}`}>{avgScore}</p>
+            <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Level Complete!</h1>
+            <p className="text-indigo-500 font-bold text-lg mb-6">{message}</p>
+            
+            <div className="grid grid-cols-2 gap-4 my-8">
+              <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                <p className="text-gray-400 text-xs font-bold uppercase mb-1">Words</p>
+                <p className="text-3xl font-bold text-gray-800">{results.length} <span className="text-lg text-gray-400">/ {challenges.length}</span></p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                <p className="text-gray-400 text-xs font-bold uppercase mb-1">Score</p>
+                <p className={`text-3xl font-bold ${avgScore >= 80 ? 'text-green-500' : 'text-indigo-500'}`}>{avgScore}</p>
+              </div>
             </div>
+            <button 
+              onClick={() => setAppState(AppState.IDLE)}
+              className="w-full py-4 flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold text-lg transition-all shadow-xl hover:-translate-y-1"
+            >
+              <RotateCcw className="w-5 h-5" />
+              Play Again
+            </button>
           </div>
-          <button 
-            onClick={() => setAppState(AppState.IDLE)}
-            className="w-full py-4 flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold text-lg transition-all shadow-xl hover:-translate-y-1"
-          >
-            <RotateCcw className="w-5 h-5" />
-            Play Again
-          </button>
-        </div>
+        </main>
+        
+        <Footer />
       </div>
     );
   }
 
   // Main Game Loop
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50 text-gray-800 selection:bg-indigo-100 selection:text-indigo-900 font-sans">
-        
-        {/* Animated Background */}
-        <div className="fixed inset-0 z-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 selection:bg-indigo-100 selection:text-indigo-900 font-sans">
+      {/* Animated Background */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
 
-      {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-indigo-600 p-2 rounded-xl shadow-md">
-                <Gamepad2 className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-extrabold text-xl tracking-tight text-indigo-900 hidden sm:block">SpeakPerfect</span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-             <div className={`flex items-center gap-2 font-mono font-bold text-lg px-4 py-2 rounded-full transition-colors border-2 ${timeLeft < 30 ? 'bg-red-50 text-red-500 border-red-100 animate-pulse' : 'bg-white text-gray-700 border-gray-100'}`}>
-                <Timer className="w-5 h-5" />
-                <span>{formatTime(timeLeft)}</span>
-             </div>
-             <div className="text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100">
-               Word {currentIndex + 1} of {challenges.length}
-             </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        showTimer={true}
+        timeLeft={timeLeft}
+        showProgress={true}
+        currentIndex={currentIndex}
+        totalWords={challenges.length}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-2xl px-6 py-8 flex flex-col items-center relative z-10">
-        
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center relative z-10">
         {/* Progress Bar */}
-        <div className="w-full h-3 bg-gray-200 rounded-full mb-10 overflow-hidden shadow-inner">
-            <div 
-                className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-all duration-700 ease-out rounded-full relative"
-                style={{ width: `${challenges.length > 0 ? ((currentIndex + (appState === AppState.RESULT ? 1 : 0)) / challenges.length) * 100 : 0}%` }}
-            >
-                <div className="absolute inset-0 bg-white/30 w-full animate-[shimmer_2s_infinite]"></div>
-            </div>
+        <div className="w-full max-w-2xl h-3 bg-gray-200 rounded-full mb-10 overflow-hidden shadow-inner">
+          <div 
+            className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-all duration-700 ease-out rounded-full relative"
+            style={{ width: `${challenges.length > 0 ? ((currentIndex + (appState === AppState.RESULT ? 1 : 0)) / challenges.length) * 100 : 0}%` }}
+          >
+            <div className="absolute inset-0 bg-white/30 w-full animate-[shimmer_2s_infinite]"></div>
+          </div>
         </div>
 
         {currentChallenge && <WordDisplay challenge={currentChallenge} />}
 
         {/* Dynamic Interaction Area */}
-        <div className="w-full min-h-[300px] flex flex-col items-center justify-start mt-4">
-            
-            {appState === AppState.ERROR && (
-                <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-2xl text-sm w-full text-center border-2 border-red-100 font-bold animate-shake">
-                    {errorMsg || "Oops! Something went wrong."}
-                    <button onClick={handleReset} className="block mx-auto mt-2 underline text-red-800">Try Again</button>
-                </div>
-            )}
+        <div className="w-full max-w-2xl flex-1 flex flex-col items-center justify-center mt-4">
+          {appState === AppState.ERROR && (
+            <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-2xl text-sm w-full text-center border-2 border-red-100 font-bold animate-shake">
+              {errorMsg || "Oops! Something went wrong."}
+              <button onClick={handleReset} className="block mx-auto mt-2 underline text-red-800">Try Again</button>
+            </div>
+          )}
 
-            {appState !== AppState.RESULT ? (
-                <div className="w-full flex flex-col items-center animate-fade-in">
-                    <Recorder 
-                        appState={appState}
-                        onStartRecording={handleStartRecording}
-                        onRecordingComplete={handleRecordingComplete}
-                    />
-                </div>
-            ) : (
-                evaluation && (
-                    <ResultCard 
-                        result={evaluation}
-                        onNext={handleNext}
-                        isLast={currentIndex === challenges.length - 1}
-                    />
-                )
-            )}
+          {appState !== AppState.RESULT ? (
+            <div className="w-full flex flex-col items-center animate-fade-in">
+              <Recorder 
+                appState={appState}
+                onStartRecording={handleStartRecording}
+                onRecordingComplete={handleRecordingComplete}
+              />
+            </div>
+          ) : (
+            evaluation && (
+              <ResultCard 
+                result={evaluation}
+                onNext={handleNext}
+                isLast={currentIndex === challenges.length - 1}
+              />
+            )
+          )}
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full py-6 text-center text-gray-400 text-xs bg-white/50 backdrop-blur-sm relative z-10">
-        <p className="font-bold tracking-wider opacity-60">POWERED BY SPELLBEE</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

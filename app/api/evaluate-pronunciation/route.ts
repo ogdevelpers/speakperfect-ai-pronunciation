@@ -1,8 +1,14 @@
+export const runtime = 'edge';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Convert base64 to Buffer for OpenAI API (Node.js compatible)
-const base64ToBuffer = (base64: string): Buffer => {
-  return Buffer.from(base64, 'base64');
+// Convert base64 to ArrayBuffer for Edge runtime
+const base64ToArrayBuffer = (base64: string): ArrayBuffer => {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
 };
 
 // Helper function to check if error is retryable
@@ -78,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     const attemptEvaluation = async () => {
       // Step 1: Transcribe audio using Whisper API
-      const audioBuffer = base64ToBuffer(audioBase64);
+      const audioBuffer = base64ToArrayBuffer(audioBase64);
       const audioBlob = new Blob([audioBuffer], { type: mimeType });
 
       const formData = new FormData();

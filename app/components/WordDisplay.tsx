@@ -54,7 +54,6 @@ const WordDisplay: React.FC<WordDisplayProps> = ({ challenge }) => {
             >
             <Volume2 className="w-6 h-6 text-indigo-600" />
             </button>
-            <span className="text-2xl font-inter text-gray-600">{challenge.phonetic}</span>
         </div>
 
         <p className="text-gray-600 font-medium font-inter text-lg">
