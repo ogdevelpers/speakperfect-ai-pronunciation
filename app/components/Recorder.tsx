@@ -198,7 +198,7 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
         </div>
         <button
           onClick={startRecording}
-          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold text-lg transition-all flex items-center gap-3 shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 active:scale-95"
+          className="btn-gradient-indigo flex items-center gap-3"
         >
           <Mic className="w-6 h-6" />
           Start Recording
@@ -211,7 +211,7 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
   // Show recording interface when actively recording
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="h-32 flex items-end justify-center gap-1.5 mb-6 w-full max-w-sm p-4 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/60 shadow-inner">
+      <div className="h-32 flex items-end justify-center gap-1-5 mb-6 w-full max-w-sm p-4 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/60 shadow-inner">
          {visualizerData.map((height, i) => (
            <div 
               key={i} 
@@ -229,7 +229,12 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
         
         <button
           onClick={stopRecording}
-          className="mt-2 px-8 py-3 bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 active:scale-95 rounded-2xl font-bold transition-all flex items-center gap-2 border-2 border-red-200"
+          className="mt-2 px-8 py-3 bg-red-100 text-red-600 hover-bg-red-200 rounded-2xl font-bold transition-all flex items-center gap-2 border-2 border-red-200"
+          style={{ transform: 'scale(1)' }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
         >
            <Square className="w-4 h-4 fill-current" />
            Stop & Check

@@ -48,18 +48,27 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, onNext, isLast }) => {
   const stars = result.score >= 90 ? 3 : result.score >= 70 ? 2 : 1;
 
   return (
-    <div className="w-full max-w-md mx-auto mt-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden animate-slide-up border-2 border-white/50">
+    <div className={`w-full mx-auto mt-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden animate-slide-up border-2 ${isGood ? 'result-card-good' : 'result-card-nice-try'}`}>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                {isGood ? "Awesome!" : "Nice Try!"}
-                {isGood && <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />}
+        <div className={`flex items-center justify-between mb-4 p-4 rounded-2xl ${isGood ? 'result-header-good' : 'result-header-nice-try'}`}>
+            <h2 className={`text-3xl font-extrabold flex items-center gap-3 ${isGood ? 'text-green-700' : 'text-orange-700'}`}>
+                {isGood ? (
+                  <>
+                    <span>Awesome!</span>
+                    <Sparkles className="w-6 h-6 text-yellow-500 animate-pulse" />
+                  </>
+                ) : (
+                  <>
+                    <span>Nice Try!</span>
+                    <XCircle className="w-6 h-6 text-orange-500" />
+                  </>
+                )}
             </h2>
             <div className="flex gap-1">
                 {[1, 2, 3].map((s) => (
                     <Star 
                         key={s} 
-                        className={`w-6 h-6 ${s <= stars ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                        className={`w-7 h-7 ${s <= stars ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
                     />
                 ))}
             </div>
@@ -106,19 +115,23 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, onNext, isLast }) => {
              </div>
         </div>
 
-        <div className={`p-4 rounded-2xl border-2 mb-6 ${isGood ? 'bg-green-50 border-green-100' : 'bg-orange-50 border-orange-100'}`}>
-            <p className={`${isGood ? 'text-green-800' : 'text-orange-800'} text-sm leading-relaxed font-medium`}>
-                <span className="font-bold block mb-1 flex items-center gap-2">
-                   {isGood ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                   Coach says:
+        <div className={`coach-feedback-box ${isGood ? 'coach-box-good' : 'coach-box-nice-try'}`}>
+            <div className="coach-feedback-content">
+                <span className="coach-feedback-header">
+                   {isGood ? <CheckCircle2 className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
+                   <span>Coach says:</span>
                 </span>
-                {result.feedback}
-            </p>
+                <p className="coach-feedback-text">{result.feedback}</p>
+            </div>
         </div>
 
         <button
             onClick={onNext}
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-indigo-200 hover:-translate-y-1 active:translate-y-0"
+            className="w-full py-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover-shadow-indigo-200"
+            style={{ transform: 'translateY(0)' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-0.25rem)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseDown={(e) => e.currentTarget.style.transform = 'translateY(0)'}
         >
             <span>{isLast ? "See Final Score" : "Next Word"}</span>
             <ArrowRight className="w-5 h-5" />
