@@ -48,15 +48,6 @@ const WordDisplay: React.FC<WordDisplayProps> = ({ challenge }) => {
       </div>
       
       <div className="word-definition-card">
-        <div className="word-definition-header">
-          <button 
-            onClick={speakWord}
-            className="word-listen-button"
-            aria-label="Listen to pronunciation"
-          >
-            <Volume2 className="w-6 h-6 text-indigo-600" />
-          </button>
-        </div>
         <p className="word-definition-text">
           "{challenge.definition}"
         </p>

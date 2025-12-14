@@ -6,8 +6,6 @@ import { AppState, EvaluationResult, Level } from './types';
 import WordDisplay from './components/WordDisplay';
 import Recorder from './components/Recorder';
 import ResultCard from './components/ResultCard';
-import Header from './components/Header';
-import Footer from './components/Footer';
 import Timer from './components/Timer';
 import { evaluatePronunciation } from './services/pronunciationService';
 import { Mic2, Timer as TimerIcon, Trophy, RotateCcw, Play, Gamepad2, TrendingUp, TrendingDown, Minus, ArrowLeft } from 'lucide-react';
@@ -186,14 +184,19 @@ export default function Home() {
   // Start Screen
   if (appState === AppState.IDLE) {
     return (
-      <div className="start-screen">
-        <Header />
-        
-        <main className="flex-1 flex items-center justify-center p-6 relative">
-          {/* Decorative Blobs */}
-          <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
-          <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10"></div>
-
+      <div 
+        className="min-h-screen flex items-center justify-center p-6 relative"
+        style={{
+          backgroundImage: 'url(/img/games-ui-05.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          width: '100vw',
+          minHeight: '100vh'
+        }}
+      >
+        <main className="flex-1 flex items-end justify-center p-6 relative pb-100" style={{ marginTop: '200px' }}>
           <div className="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform transition-transform duration-300 relative z-10"
                style={{ transform: 'scale(1)' }}
                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.01)'}
@@ -201,7 +204,6 @@ export default function Home() {
             <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-indigo-50">
               <Mic2 className="w-12 h-12 text-indigo-600 animate-bounce" />
             </div>
-            <h1 className="text-4xl font-extrabold text-gray-800 mb-3 tracking-tight">SpeakPerfect</h1>
             <p className="text-gray-500 mb-8 font-medium">
               Can you beat the clock? Pronounce words correctly in 2 minutes!
             </p>
@@ -214,8 +216,6 @@ export default function Home() {
             </button>
           </div>
         </main>
-        
-        <Footer />
       </div>
     );
   }
@@ -253,14 +253,19 @@ export default function Home() {
     ];
 
     return (
-      <div className="level-selection-screen">
-        <Header />
-        
-        <main className="flex-1 flex items-center justify-center p-6 relative">
-          {/* Decorative Blobs */}
-          <div className="blob bg-yellow-300 w-64 h-64 rounded-full top-10 left-10"></div>
-          <div className="blob bg-cyan-300 w-80 h-80 rounded-full bottom-20 right-10"></div>
-
+      <div 
+        className="min-h-screen flex items-center justify-center p-6 relative"
+        style={{
+          backgroundImage: 'url(/img/games-ui-05.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          width: '100vw',
+          minHeight: '100vh'
+        }}
+      >
+        <main className="flex-1 flex items-center justify-center p-6 relative" style={{ marginTop: '300px' }}>
           <div className="max-w-2xl w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center transform transition-transform duration-300 relative z-10"
                style={{ transform: 'scale(1)' }}
                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.01)'}
@@ -310,8 +315,6 @@ export default function Home() {
             </button>
           </div>
         </main>
-        
-        <Footer />
       </div>
     );
   }
@@ -327,9 +330,18 @@ export default function Home() {
     else if (avgScore > 75) message = "Awesome Job! 🎉";
 
     return (
-      <div className="finished-screen">
-        <Header />
-        
+      <div 
+        className="min-h-screen flex items-center justify-center p-6 relative"
+        style={{
+          backgroundImage: 'url(/img/games-ui-06.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          width: '100vw',
+          minHeight: '100vh'
+        }}
+      >
         <main className="flex-1 flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center animate-fade-in-up border-4 border-white/20">
             <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-yellow-200">
@@ -360,24 +372,24 @@ export default function Home() {
             </button>
           </div>
         </main>
-        
-        <Footer />
       </div>
     );
   }
 
   // Main Game Loop
   return (
-    <div className="game-screen">
-      {/* Animated Background */}
-      <div className="game-background"></div>
-
-      <Header 
-        showProgress={true}
-        currentIndex={currentIndex}
-        totalWords={challenges.length}
-      />
-
+    <div 
+      className="game-screen min-h-screen"
+      style={{
+        backgroundImage: 'url(/img/games-ui-06.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        width: '100vw',
+        minHeight: '100vh'
+      }}
+    >
       {/* Main Content */}
       <main className="main-game-content">
         {/* Progress Bar Section */}
@@ -435,8 +447,6 @@ export default function Home() {
           )}
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

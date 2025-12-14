@@ -174,7 +174,7 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
                 <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
              </div>
         </div>
-        <p className="text-indigo-600 font-bold mt-4 text-lg">Checking your pronunciation...</p>
+        <p className="text-white font-bold mt-4 text-lg bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20 shadow-lg">Checking your pronunciation...</p>
       </div>
     );
   }
@@ -203,7 +203,7 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
           <Mic className="w-6 h-6" />
           Start Recording
         </button>
-        <p className="text-gray-500 text-sm mt-4 font-medium">Click to start recording your pronunciation</p>
+        <p className="text-white text-sm mt-4 font-semibold bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20 shadow-lg">Click to start recording your pronunciation</p>
       </div>
     );
   }
@@ -222,7 +222,7 @@ const Recorder: React.FC<RecorderProps> = ({ appState, onRecordingComplete, onSt
       </div>
 
       <div className="flex flex-col items-center gap-4">
-        <div className="flex items-center gap-2 bg-white px-6 py-2 rounded-full shadow-sm text-indigo-600 font-bold animate-bounce">
+        <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-6 py-2 rounded-full shadow-lg text-indigo-600 font-bold animate-bounce border border-white/40">
            <Mic className="w-5 h-5" />
            <span>I'm listening! Say the word...</span>
         </div>
