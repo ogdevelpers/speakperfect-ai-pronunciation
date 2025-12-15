@@ -381,7 +381,7 @@ export default function Home() {
     <div 
       className="game-screen min-h-screen"
       style={{
-        backgroundImage: 'url(/img/games-ui-06.jpg)',
+        backgroundImage: 'url(/img/games-ui-07.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat',
@@ -392,6 +392,15 @@ export default function Home() {
     >
       {/* Main Content */}
       <main className="main-game-content">
+        {/* Logo Section */}
+        <div className="game-logo-section">
+          <img 
+            src="/img/UI-10.png" 
+            alt="Logo" 
+            className="game-logo"
+          />
+        </div>
+        
         {/* Progress Bar Section */}
         <div className="game-progress-section">
           <div className="game-progress-bar">
