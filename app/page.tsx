@@ -399,6 +399,11 @@ export default function Home() {
             alt="Logo" 
             className="game-logo"
           />
+          <img 
+            src="/img/UI-16.png" 
+            alt="Logo" 
+            className="game-logo"
+          />
         </div>
         
         {/* Progress Bar Section */}

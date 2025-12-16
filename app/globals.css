@@ -1528,11 +1528,12 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label,
 .game-logo-section {
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
   margin-bottom: 1rem;
   padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .game-logo {
@@ -1543,6 +1544,15 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label,
   animation: fadeIn 0.6s ease-out forwards;
 }
 
+.game-brand-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
 @media (min-width: 640px) {
   .game-logo {
     max-width: 250px;
@@ -1550,6 +1560,11 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label,
   
   .game-logo-section {
     padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .game-brand-name {
+    font-size: 1.75rem;
   }
 }
 
@@ -1559,7 +1574,12 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label,
   }
   
   .game-logo-section {
-    padding-left: 2rem;
+    padding-left: 7rem;
+    padding-right: 7rem;
+  }
+  
+  .game-brand-name {
+    font-size: 2rem;
   }
 }
 
